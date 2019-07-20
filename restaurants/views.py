@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Restaurant
-from .forms import RestaurantForm, SignupForm, SigninForm
+from .models import Restaurant, Item
+from .forms import RestaurantForm, SignupForm, SigninForm, CreateItemForm
 from django.contrib.auth import login, authenticate, logout
 
 def signup(request):
@@ -50,8 +50,11 @@ def restaurant_list(request):
 
 
 def restaurant_detail(request, restaurant_id):
+    cucumber = Restaurant.objects.get(id=restaurant_id)
+# 
     context = {
-        "restaurant": Restaurant.objects.get(id=restaurant_id)
+        "restaurant": cucumber,
+        "items": Item.objects.filter(restaurant=cucumber)
     }
     return render(request, 'detail.html', context)
 
@@ -60,17 +63,34 @@ def restaurant_create(request):
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES)
         if form.is_valid():
+            form.save(commit=False)
+            form.owner = request.user
+            #                   ^^ this allows us to save the form under the user thats signed in form.owner
             form.save()
+            #        ^^this saves the entry to the database
             return redirect('restaurant-list')
     context = {
         "form":form,
     }
     return render(request, 'create.html', context)
 
-def item_create(request):
+def item_create(request, restaurant_id):
+    form = CreateItemForm()
+    potato = Restaurant.objects.get(id=restaurant_id)
+    # ^^ this is like a cabinet for us to put the restaurant to which we want to save the items
+    if request.method == "POST":
+        form = CreateItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            carrotcake = form.save(commit=False)
+            carrotcake.restaurant = potato
+            #                   ^^ this manually assigns the restraurant field to the POTATO variable
+            carrotcake.save()
+            # ^^ this is the SAVE function in Django.. now our info is saved in the database
+            return redirect('restaurant-detail', restaurant_id)
 
     context = {
-        
+         "form":form,
+         "potato_id": restaurant_id
     }
     return render(request, 'item_create.html', context)
 

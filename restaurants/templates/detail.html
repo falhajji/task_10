@@ -20,8 +20,33 @@
             <a href="{% url 'restaurant-update' restaurant.id %}" class="btn btn-outline-primary btn-block">Update</a>
         </div>
         <div class="col-md-6">
+            <a href="{% url 'item-create' restaurant.id %}" class="btn btn-outline-primary btn-block">Create Item</a>
+        </div>
+        <div class="col-md-6">
             <a href="{% url 'restaurant-delete' restaurant.id %}" class="btn btn-outline-danger btn-block">Delete</a>
         </div>
+
+
+    {% for item in items %}
+    <div class="col-md-4">
+        <div class="card my-card">
+          <div class="card-body">
+            <h5 class="card-title">{{item.name}}</h5>
+            <p class="card-text">{{item.description|truncatechars:25}}</p>
+            <p class="card-text">{{item.price|truncatechars:25}}</p>
+          </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+
+
+
+
+
+
     </div>
   </div>
 </div>
